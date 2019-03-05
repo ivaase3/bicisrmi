@@ -26,7 +26,7 @@ public class Servidor implements Interfaz{
 	static Vista vista;
 
 	public static void main(String[] args) {
-		try {
+	
 			// creacion de bicis y puntos
 			final int TOTALES = 10;
 			int id = 0;
@@ -57,7 +57,13 @@ public class Servidor implements Interfaz{
 			int cont = 0;
 			Registry reg = null;
 			Servidor servidor = new Servidor();
-			reg = LocateRegistry.createRegistry(5555);
+			try {
+				reg = LocateRegistry.createRegistry(5555);
+			} catch (RemoteException e) {
+				System.out.println("error");
+				e.printStackTrace();
+			}
+			
 			try {
 				reg.rebind("Bici", (Interfaz) UnicastRemoteObject.exportObject(servidor, 0));
 			} catch (AccessException e) {
@@ -68,9 +74,7 @@ public class Servidor implements Interfaz{
 			
 			
 		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
 	}
 	public static void iniciaDatosVentana(Vista vista, ArrayList<Punto> puntos) {
 		vista.tfPunto1.setText(String.valueOf(puntos.get(0).getTotal()));

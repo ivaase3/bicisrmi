@@ -22,10 +22,12 @@ import bicimad.Punto;
 public class Cliente implements ActionListener {
 	public static boolean bici = false;
 	static VentanaC ventana = new VentanaC();
-//	static String accion = "";
 	static Object objetoEntrada = null;
-//	static ArrayList<Punto> puntos;
 	static Interfaz interfaz = null;
+	static Registry registry;
+	
+	
+	
 	public Cliente(VentanaC ventana) {
 			
 			this.ventana = ventana;
@@ -35,7 +37,7 @@ public class Cliente implements ActionListener {
 			
 			try {
 				System.out.println("Localizando registro de objetos remotos...");
-				Registry registry;
+//				Registry registry;
 				registry = LocateRegistry.getRegistry("localhost", 5555);
 				interfaz = (Interfaz) registry.lookup("Bici");
 			} catch (RemoteException e) {
@@ -132,7 +134,7 @@ public class Cliente implements ActionListener {
 		try {
 //			Object objetoEntrada = null;
 			String accion = "";
-			
+			Interfaz interfaz = (Interfaz) registry.lookup("Bici");
 			switch (e.getActionCommand()) {
 			case "refrescar":
 				accion = "refrescar";
@@ -273,6 +275,9 @@ public class Cliente implements ActionListener {
 			}
 		
 		} catch (IOException e1) {
+			e1.printStackTrace();
+		} catch (NotBoundException e1) {
+			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
