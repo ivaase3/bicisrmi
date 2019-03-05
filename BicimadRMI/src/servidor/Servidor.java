@@ -1,11 +1,5 @@
 package servidor;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 import java.rmi.AccessException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,25 +14,24 @@ import bicimad.Punto;
 
 public class Servidor implements Interfaz{
 
-	// Atributos
+
 	
-	public static ArrayList<Punto> puntos = new ArrayList<>();
+	public static ArrayList<Punto> puntos;
 	static Vista vista;
 
 	public static void main(String[] args) {
 	
 			// creacion de bicis y puntos
-			final int TOTALES = 10;
 			int id = 0;
-			Hilo hilo;
-			ArrayList<Punto> puntos = new ArrayList<>();
+
+			puntos = new ArrayList<>();
 			
 			
 			
 			System.out.println("creando los datos");
-			for (int i = 0; i < 5; i++) {
-				Punto punto = new Punto("calle " + i, TOTALES);
-				for (int j = 0; j < TOTALES; j++) {
+			for (int i = 0; i < Constantes.N_PUNTOS; i++) {
+				Punto punto = new Punto("calle " + i, Constantes.N_BICIS_INICIO);
+				for (int j = 0; j < Constantes.N_BICIS_INICIO; j++) {
 					Bicicleta bicicleta = new Bicicleta(id);
 					punto.getPunto().add(bicicleta);
 					punto.setnDisponibles(punto.getnDisponibles() + 1);
@@ -54,17 +47,13 @@ public class Servidor implements Interfaz{
 			
 			
 			System.out.println("Conexion iniciada");
-			int cont = 0;
 			Registry reg = null;
-			Servidor servidor = new Servidor();
-			try {
-				reg = LocateRegistry.createRegistry(5555);
-			} catch (RemoteException e) {
-				System.out.println("error");
-				e.printStackTrace();
-			}
 			
 			try {
+				reg = LocateRegistry.createRegistry(Constantes.PUERTO);
+				System.out.println("Creando el objeto servidor e inscribiendolo en el registro…");
+				Servidor servidor = new Servidor();
+				
 				reg.rebind("Bici", (Interfaz) UnicastRemoteObject.exportObject(servidor, 0));
 			} catch (AccessException e) {
 				e.printStackTrace();
@@ -97,9 +86,15 @@ public class Servidor implements Interfaz{
 		switch (accion) {
 		case "refrescar":
 			rfrscar(vista,puntos);
-			
-			break;
+			int[] numerosr = new int[]{
+					puntos.get(0).getnDisponibles(), 
+					puntos.get(1).getnDisponibles(),
+					puntos.get(2).getnDisponibles(),
+					puntos.get(3).getnDisponibles()
+			};
+			return numerosr;
 		case "coger1":
+		
 			if (puntos.get(0).getnDisponibles() > 0) {
 				puntos.get(0).setnDisponibles(puntos.get(0).getnDisponibles() - 1);
 				rfrscar(vista,puntos);
@@ -118,63 +113,109 @@ public class Servidor implements Interfaz{
 			if (puntos.get(1).getnDisponibles() > 0) {
 				puntos.get(1).setnDisponibles(puntos.get(1).getnDisponibles() - 1);
 				rfrscar(vista,puntos);
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
+				return "error";
 			}
-			break;
+//			break;
 		case "coger3":
 			if (puntos.get(2).getnDisponibles() > 0) {
 				puntos.get(2).setnDisponibles(puntos.get(2).getnDisponibles() - 1);
 				rfrscar(vista,puntos);
-			
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
-			
+				return "error";
 			}
-			break;
+//			break;
 		case "coger4":
 			if (puntos.get(3).getnDisponibles() > 0) {
 				puntos.get(3).setnDisponibles(puntos.get(3).getnDisponibles() - 1);
 				rfrscar(vista,puntos);
-				
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
-				
+				return "error";
 			}
-			break;
+//			break;
 		case "dejar1":
-			if (puntos.get(0).getnDisponibles() < 10) {
+			if (puntos.get(0).getnDisponibles() < Constantes.N_MAXIMO_BICIS) {
 				puntos.get(0).setnDisponibles(puntos.get(0).getnDisponibles() + 1);
 				rfrscar(vista,puntos);
-			
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
-				
+				return "error";
 			}
-			break;
+//			break;
 		case "dejar2":
-			if (puntos.get(1).getnDisponibles() < 10) {
+			if (puntos.get(1).getnDisponibles() < Constantes.N_MAXIMO_BICIS) {
 				puntos.get(1).setnDisponibles(puntos.get(1).getnDisponibles() + 1);
 				rfrscar(vista,puntos);
-				
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
-				
+				return "error";
 			}
-			break;
+//			break;
 		case "dejar3":
-			if (puntos.get(2).getnDisponibles() < 10) {
+			if (puntos.get(2).getnDisponibles() < Constantes.N_MAXIMO_BICIS) {
 				puntos.get(2).setnDisponibles(puntos.get(2).getnDisponibles() + 1);
 				rfrscar(vista,puntos);
-				
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
-				
+				return "error";
 			}
-			break;
+//			break;
 		case "dejar4":
-			if (puntos.get(3).getnDisponibles() < 10) {
+			if (puntos.get(3).getnDisponibles() < Constantes.N_MAXIMO_BICIS) {
 				puntos.get(3).setnDisponibles(puntos.get(3).getnDisponibles() + 1);
 				rfrscar(vista,puntos);
+				int[] numeros = new int[]{
+						puntos.get(0).getnDisponibles(), 
+						puntos.get(1).getnDisponibles(),
+						puntos.get(2).getnDisponibles(),
+						puntos.get(3).getnDisponibles()
+				};
+				return numeros;
 			} else {
+				return "error";
 			}
-			break;
-		}
-		return null;
+//			break;
+		}		
+		return "error";
 	}
 }
 
